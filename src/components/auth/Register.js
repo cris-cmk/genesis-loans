@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope, faLock, faUser, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase";  // Import Firebase auth instance
+import { auth } from "../../firebase";  // Import Firebase auth instance
 
 const Register = () => {
   const [fullName, setFullName] = useState("");
