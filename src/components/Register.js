@@ -29,6 +29,7 @@ const Register = () => {
 
       // Handle successful registration here, like redirecting the user
       console.log("Registration successful!");
+      alert("Logged In Successfully")
     } catch (err) {
       setError(err.message); // Display Firebase error message
     }
