@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { 
   faMoneyBillWave, 
@@ -7,10 +8,11 @@ import {
   faClock, 
   faChartLine, 
   faUserCircle, 
-  faSignOutAlt 
+  faSignOutAlt,
+  faTimes
 } from "@fortawesome/free-solid-svg-icons";
-import { useNavigate } from "react-router-dom";
 
+import { useNavigate } from "react-router-dom";
 const LoanDashboard = () => {
   const navigate = useNavigate();
 
@@ -22,6 +24,56 @@ const LoanDashboard = () => {
     localStorage.removeItem("username"); // Clear username
     sessionStorage.clear();
     navigate("/login");
+  };
+
+
+    // Ensure all state and functions are defined in this component
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Toggle modal function
+  const toggleModal = () => {
+    setIsModalOpen((prev) => !prev);
+  };
+
+
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    amount: "",
+    term: "",
+    repaymentAmount: "",
+    purpose: "",
+  });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+  
+    setFormData((prev) => {
+      const updatedData = { ...prev, [name]: value };
+  
+      if (name === "amount" || name === "term") {
+        const amount = parseFloat(updatedData.amount) || 0;
+        const term = parseInt(updatedData.term, 10) || 0;
+        const interestRate = 0.05; // 5% monthly interest rate
+        const repaymentAmount = amount + amount * interestRate * term;
+        updatedData.repaymentAmount = repaymentAmount.toFixed(2); // Format to 2 decimal places
+      }
+  
+      return updatedData;
+    });
+  };
+  
+
+  // Form submission handler
+  const handleFormSubmit = (event) => {
+    event.preventDefault(); // Prevent default form behavior
+    const formData = new FormData(event.target);
+    const loanData = Object.fromEntries(formData.entries());
+
+    console.log("Loan Application Data:", loanData);
+
+    // Close modal after submission
+    setIsModalOpen(false);
   };
 
   return (
@@ -169,24 +221,149 @@ const LoanDashboard = () => {
               <div className="bg-green-600 text-white p-4 rounded-full">
                 <FontAwesomeIcon icon={faChartLine} className="text-2xl" />
               </div>
-              <span className="text-xl font-bold text-gray-800">$500</span>
+              <span className="text-xl font-bold text-gray-800">500</span>
             </div>
           </div>
         </div>
 
         {/* Quick Actions */}
         <div className="mt-12 flex justify-center gap-6">
-          <button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold text-lg px-8 py-4 rounded-lg shadow-lg flex items-center gap-3 transition duration-200">
+          <button onClick={toggleModal}
+          className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold text-lg px-8 py-4 rounded-lg shadow-lg flex items-center gap-3 transition duration-200">
             <FontAwesomeIcon icon={faClipboardCheck} />
            Issue Loan
           </button>
-          <button className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold text-lg px-8 py-4 rounded-lg shadow-lg flex items-center gap-3 transition duration-200">
+          <button  
+           className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold text-lg px-8 py-4 rounded-lg shadow-lg flex items-center gap-3 transition duration-200">
             <FontAwesomeIcon icon={faFileAlt} />
             View Payments
           </button>
         </div>
+        {/* Modal for Loan Application */}
+        {isModalOpen && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
+      {/* Modal Header */}
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold">Customer Loan Details</h2>
+        <button
+          onClick={toggleModal}
+          className="text-gray-500 hover:text-gray-800 focus:outline-none"
+        >
+          <FontAwesomeIcon icon={faTimes} />
+        </button>
+      </div>
+
+      {/* Loan Application Form */}
+      <form onSubmit={handleFormSubmit}>
+        {/* First Name */}
+        <div className="mb-4">
+          <label className="block text-gray-700 font-medium mb-2">Customer First Name</label>
+          <input
+            type="text"
+            name="firstName"
+            className="w-full p-2 border rounded-lg"
+            placeholder="Enter First Name"
+            required
+            value={formData.firstName}
+            onChange={handleInputChange}
+          />
+        </div>
+
+        {/* Last Name */}
+        <div className="mb-4">
+          <label className="block text-gray-700 font-medium mb-2">Customer Last Name</label>
+          <input
+            type="text"
+            name="lastName"
+            className="w-full p-2 border rounded-lg"
+            placeholder="Enter Customer Last Name"
+            required
+            value={formData.lastName}
+            onChange={handleInputChange}
+          />
+        </div>
+
+        {/* Loan Amount */}
+        <div className="mb-4">
+          <label className="block text-gray-700 font-medium mb-2">Loan Amount</label>
+          <input
+            type="number"
+            name="amount"
+            className="w-full p-2 border rounded-lg"
+            placeholder="Enter loan amount"
+            required
+            value={formData.amount}
+            onChange={handleInputChange}
+          />
+        </div>
+
+        {/* Loan Term */}
+        <div className="mb-4">
+          <label className="block text-gray-700 font-medium mb-2">Loan Term (Months)</label>
+          <input
+            type="number"
+            name="term"
+            className="w-full p-2 border rounded-lg"
+            placeholder="Enter loan term"
+            required
+            value={formData.term}
+            onChange={handleInputChange}
+          />
+        </div>
+
+        {/* Repayment Amount */}
+        <div className="mb-4">
+          <label className="block text-gray-700 font-medium mb-2">Repayment Amount</label>
+          <input
+            type="text"
+            name="repaymentAmount"
+            className="w-full p-2 border rounded-lg bg-gray-100 text-gray-600"
+            readOnly
+            value={formData.repaymentAmount}
+          />
+        </div>
+
+        {/* Loan Purpose */}
+        <div className="mb-4">
+          <label className="block text-gray-700 font-medium mb-2">Purpose of Loan</label>
+          <textarea
+            name="purpose"
+            className="w-full p-2 border rounded-lg"
+            placeholder="Enter the loan purpose"
+            required
+            value={formData.purpose}
+            onChange={handleInputChange}
+          />
+        </div>
+
+        {/* Modal Footer */}
+        <div className="flex justify-end gap-4">
+          <button
+            type="button"
+            onClick={toggleModal}
+            className="bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-lg"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
+          >
+            Submit
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+)}
+
+
+        
       </div>
     </div>
+
+    
   );
 };
 
