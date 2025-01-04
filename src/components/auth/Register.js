@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope, faLock, faUser, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebase";  // Import Firebase auth instance
+import { useNavigate } from "react-router-dom"; 
 
 const Register = () => {
   const [fullName, setFullName] = useState("");
@@ -13,7 +14,7 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
   const [showConfirmPassword, setShowConfirmPassword] = useState(false); // State to toggle confirm password visibility
-
+  const navigate = useNavigate(); // Initialize the navigate function
   const handleRegister = async (e) => {
     e.preventDefault(); // Prevent page reload on form submission
 
@@ -29,6 +30,8 @@ const Register = () => {
 
       // Handle successful registration here, like redirecting the user
       console.log("Registration successful!");
+      localStorage.setItem("username", email);
+      navigate("/dashboard"); // Navigate to dashboard on successful login
       alert("Logged In Successfully")
     } catch (err) {
       setError(err.message); // Display Firebase error message

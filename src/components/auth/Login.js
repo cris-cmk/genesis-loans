@@ -18,6 +18,7 @@ const Login = () => {
     setLoading(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
+      localStorage.setItem("username", email);
       navigate("/dashboard"); // Navigate to dashboard on successful login
     } catch (err) {
       setError("Invalid credentials!"); // Display error if login fails

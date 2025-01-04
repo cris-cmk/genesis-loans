@@ -14,8 +14,12 @@ import { useNavigate } from "react-router-dom";
 const LoanDashboard = () => {
   const navigate = useNavigate();
 
+  const username = localStorage.getItem("username") || "Guest"; // Default to "Guest" if no username is found
+
+
   const handleLogout = () => {
     localStorage.removeItem("authToken");
+    localStorage.removeItem("username"); // Clear username
     sessionStorage.clear();
     navigate("/login");
   };
@@ -59,7 +63,7 @@ const LoanDashboard = () => {
           <div className="flex items-center space-x-6">
             <div className="flex items-center space-x-2 cursor-pointer hover:bg-gray-200 p-2 rounded-full transition duration-200">
               <FontAwesomeIcon icon={faUserCircle} className="text-3xl text-gray-700" />
-              <span className="text-lg text-gray-700">John Doe</span>
+              <span className="text-lg text-gray-700">{username}</span>
             </div>
             <button
               onClick={handleLogout}
@@ -174,7 +178,7 @@ const LoanDashboard = () => {
         <div className="mt-12 flex justify-center gap-6">
           <button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold text-lg px-8 py-4 rounded-lg shadow-lg flex items-center gap-3 transition duration-200">
             <FontAwesomeIcon icon={faClipboardCheck} />
-            Apply for Loan
+           Issue Loan
           </button>
           <button className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold text-lg px-8 py-4 rounded-lg shadow-lg flex items-center gap-3 transition duration-200">
             <FontAwesomeIcon icon={faFileAlt} />
