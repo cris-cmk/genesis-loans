@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState ,useEffect} from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { 
@@ -13,6 +13,9 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import { useNavigate } from "react-router-dom";
+import { db, addDoc, collection ,getDocs, query, orderBy, limit} from "../../firebase"; // Import Firestore functions
+
+
 const LoanDashboard = () => {
   const navigate = useNavigate();
 
@@ -29,12 +32,18 @@ const LoanDashboard = () => {
 
     // Ensure all state and functions are defined in this component
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [alertVisible, setAlertVisible] = useState(false);
+
 
   // Toggle modal function
   const toggleModal = () => {
     setIsModalOpen((prev) => !prev);
   };
 
+  
+
+  // Hide alert after 3 seconds
+  setTimeout(() => setAlertVisible(false), 9000);
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -63,19 +72,61 @@ const LoanDashboard = () => {
     });
   };
   
+ // Handle form submission and save to Firestore
+ const handleFormSubmit = async (e) => {
+  e.preventDefault();
 
-  // Form submission handler
-  const handleFormSubmit = (event) => {
-    event.preventDefault(); // Prevent default form behavior
-    const formData = new FormData(event.target);
-    const loanData = Object.fromEntries(formData.entries());
+  try {
+    console.log("Loan application submitted:", formData);
+    // Submit form data to Firestore
+    await addDoc(collection(db, "loanApplications"), {
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      amount: formData.amount,
+      term: formData.term,
+      repaymentAmount: formData.repaymentAmount,
+      purpose: formData.purpose,
+      timestamp: new Date(),
+    });
+  
 
-    console.log("Loan Application Data:", loanData);
+    // Clear form after successful submission
+    setFormData({
+      firstName: "",
+      lastName: "",
+      amount: "",
+      term: "",
+      purpose: "",
+      repaymentAmount:""
+    });
 
-    // Close modal after submission
-    setIsModalOpen(false);
-  };
+  // Show success alert
+    setAlertVisible(true);
+      } catch (error) {
+    console.error("Error submitting  loan details : ", error);
+      }
+    };
 
+    //fetching recent loans
+    const [recentLoans, setRecentLoans] = useState([]);
+
+    useEffect(() => {
+      // Fetch recent loan records from Firestore
+      const fetchRecentLoans = async () => {
+        try {
+          const loansRef = collection(db, "loanApplications");
+          const recentLoansQuery = query(loansRef, orderBy("timestamp", "desc"), limit(5));
+          const querySnapshot = await getDocs(recentLoansQuery);
+          const loans = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          setRecentLoans(loans);
+          console.log("fetched loans successfully ",loans)
+        } catch (error) {
+          console.error("Error fetching recent loans: ", error);
+        }
+      };
+      fetchRecentLoans();
+    }, []);
+  
   return (
     <div className="min-h-screen bg-gray-100 flex">
       {/* Side Navigation */}
@@ -239,9 +290,36 @@ const LoanDashboard = () => {
             View Payments
           </button>
         </div>
+
+         {/* Recent Loan Records Table */}
+        <div className="bg-white p-6 rounded-lg shadow-lg mb-8">
+          <h2 className="text-2xl font-semibold mb-4">Recent Loan Applications</h2>
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr>
+                <th className="border-b p-4">First Name</th>
+                <th className="border-b p-4">Last Name</th>
+                <th className="border-b p-4">Amount</th>
+                <th className="border-b p-4">Term</th>
+                <th className="border-b p-4">Purpose</th>
+              </tr>
+            </thead>
+            <tbody>
+              {recentLoans.map(loan => (
+                <tr key={loan.id}>
+                  <td className="border-b p-4">{loan.firstName}</td>
+                  <td className="border-b p-4">{loan.lastName}</td>
+                  <td className="border-b p-4">{loan.amount}</td>
+                  <td className="border-b p-4">{loan.term}</td>
+                  <td className="border-b p-4">{loan.purpose}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
         {/* Modal for Loan Application */}
         {isModalOpen && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
     <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
       {/* Modal Header */}
       <div className="flex justify-between items-center mb-4">
@@ -348,17 +426,31 @@ const LoanDashboard = () => {
           </button>
           <button
             type="submit"
-            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
-          >
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
             Submit
           </button>
+           {/* Success Alert */}
+ 
+        
+
+         {/* Success Alert */}
+      {alertVisible && (
+        <div className="fixed bg-green-500 text-white px-20 py-3 rounded-lg shadow-lg">
+        Loan details submitted successfully!
+      </div>
+      )}
         </div>
       </form>
+
+      
+    
     </div>
+   
+    
   </div>
-)}
+    )}
 
-
+  
         
       </div>
     </div>

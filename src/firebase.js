@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
+import { getFirestore,collection, addDoc, getDocs,query, orderBy, limit  } from "firebase/firestore";
 
 // Your Firebase configuration (from Firebase Console)
 const firebaseConfig = {
@@ -17,5 +18,8 @@ const app = initializeApp(firebaseConfig);
 
 // Initialize Firebase Authentication
 const auth = getAuth(app);
+// Initialize Firebase Fires Store
 
-export { auth };
+const db = getFirestore(app);
+
+export { auth,db, addDoc, collection ,getDocs, query, orderBy, limit };
