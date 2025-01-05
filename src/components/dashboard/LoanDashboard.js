@@ -160,6 +160,11 @@ const LoanDashboard = () => {
       }
     };
 
+    // Function to handle view payments onclick
+    const handleViewPaymentsClick = () => {
+      alert("THIS FEATURE IS COMMING SOON")
+
+  };
    
 
    
@@ -169,7 +174,7 @@ const LoanDashboard = () => {
       {/* Side Navigation */}
       <div className="w-64 bg-gradient-to-br from-blue-700 to-blue-500 text-white p-6 fixed h-full shadow-xl">
         <div className="flex items-center mb-8">
-          <h2 className="text-3xl font-bold tracking-wide">Genesis Loans</h2>
+          <h2 className="text-2xl font-bold tracking-wide">Genesis Loans</h2>
         </div>
         <ul className="space-y-6">
           <li className="flex items-center space-x-4 hover:bg-blue-600 p-3 rounded-lg transition duration-200 shadow-sm">
@@ -321,7 +326,7 @@ const LoanDashboard = () => {
             <FontAwesomeIcon icon={faClipboardCheck} />
            Issue Loan
           </button>
-          <button  
+          <button  onClick={handleViewPaymentsClick}
            className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold text-lg px-8 py-4 rounded-lg shadow-lg flex items-center gap-3 transition duration-200">
             <FontAwesomeIcon icon={faFileAlt} />
             View Payments
