@@ -30,6 +30,7 @@ const Register = () => {
 
       // Handle successful registration here, like redirecting the user
       console.log("Registration successful!");
+      
       localStorage.setItem("username", email);
       navigate("/dashboard"); // Navigate to dashboard on successful login
       alert("Logged In Successfully")

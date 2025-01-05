@@ -3,7 +3,7 @@
 This is a Loan Management Dashboard built with React and Firebase. The dashboard allows users to apply for loans, view the loan details, and manage loan information. The app includes features such as form validation, submitting loan details, displaying recent loans, and calculating the total loan amount and number of loans.The project has many features that are yet to be completed but the plan is to build up on what I will be learning and implement the features progressively
 
 ## Features
-- **User Registration**: New Users are able to register into the platform by providing the required details
+- **User Registration**: This feature is disabled since the portal is anly accesible by admin.
 - **User Login**: Existing users are able to login by providing right credentials used during registration
 - **Issue Loan**: Users can issue loan to a customer  , including the amount borrowed by clicking apply loann button.
 - **Recent Loan Display**: The dashboard shows the most recent loans submitted.
@@ -34,3 +34,7 @@ npm install -g firebase-tools
 ## Access to the live link 
 
 - https://moringa-2abdf.web.app/dashboard
+
+## TEST LOGIN CREDENTIALS
+-username - cmk@gmail.com
+-password - cmk@gmail.com

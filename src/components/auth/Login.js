@@ -26,6 +26,12 @@ const Login = () => {
     setLoading(false);
   };
 
+  const register = () => {
+    alert("USE THE FOLLOWING CREDENTIALS FOR TESTING USRNAME : cmk@gmail.com PASSWORD : cmk@gmail.com")
+  };
+
+
+
   return (
     <div className="min-h-screen bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center">
       <div className="relative bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
@@ -78,9 +84,9 @@ const Login = () => {
           </button>
         </form>
 
-        <p className="mt-4 text-sm text-center text-gray-600">
+        <p className="mt-4 text-sm text-center text-gray-600" onClick={register}>
           Don’t have an account?{" "}
-          <a href="/register" className="text-blue-500 hover:underline">
+          <a href="/" className="text-blue-500 hover:underline">
             Register
           </a>
         </p>
