@@ -5,7 +5,7 @@ This is a Loan Management Dashboard built with React and Firebase. The dashboard
 ## Features
 - **User Registration**: New Users are able to register into the platform by providing the required details
 - **User Login**: Existing users are able to login by providing right credentials used during registration
-- **Loan Application Form**: Users can submit their loan details, including the amount borrowed by clicking apply loann button.
+- **Issue Loan**: Users can issue loan to a customer  , including the amount borrowed by clicking apply loann button.
 - **Recent Loan Display**: The dashboard shows the most recent loans submitted.
 - **Loan Calculation**: The total number of loans and the total amount borrowed are calculated and displayed on the dashboard.
 - **Firebase Backend**: Data is stored in Firebase Firestore for persistence.
