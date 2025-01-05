@@ -110,29 +110,29 @@ const LoanDashboard = () => {
     //fetching recent loans
     const [recentLoans, setRecentLoans] = useState([]);
 
+    const fetchRecentLoans = async () => {
+      try {
+        const loansRef = collection(db, "loanApplications");
+        const recentLoansQuery = query(loansRef, orderBy("timestamp", "desc"), limit(5));
+        const querySnapshot = await getDocs(recentLoansQuery);
+        const loans = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setRecentLoans(loans);
+        console.log("fetched loans successfully ",loans)
+      } catch (error) {
+        console.error("Error fetching recent loans: ", error);
+      }
+    };
+    // Fetch recent loans on initial load
     useEffect(() => {
-      // Fetch recent loan records from Firestore
-      const fetchRecentLoans = async () => {
-        try {
-          const loansRef = collection(db, "loanApplications");
-          const recentLoansQuery = query(loansRef, orderBy("timestamp", "desc"), limit(5));
-          const querySnapshot = await getDocs(recentLoansQuery);
-          const loans = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-          setRecentLoans(loans);
-          console.log("fetched loans successfully ",loans)
-        } catch (error) {
-          console.error("Error fetching recent loans: ", error);
-        }
-      };
       fetchRecentLoans();
-    }, []);
+      }       , []);
   
   return (
     <div className="min-h-screen bg-gray-100 flex">
       {/* Side Navigation */}
       <div className="w-64 bg-gradient-to-br from-blue-700 to-blue-500 text-white p-6 fixed h-full shadow-xl">
         <div className="flex items-center mb-8">
-          <h2 className="text-3xl font-bold tracking-wide">Genesis</h2>
+          <h2 className="text-3xl font-bold tracking-wide">Genesis Loans</h2>
         </div>
         <ul className="space-y-6">
           <li className="flex items-center space-x-4 hover:bg-blue-600 p-3 rounded-lg transition duration-200 shadow-sm">
@@ -301,7 +301,7 @@ const LoanDashboard = () => {
                 <th className="border-b p-4">Last Name</th>
                 <th className="border-b p-4">Amount</th>
                 <th className="border-b p-4">Term</th>
-                <th className="border-b p-4">Purpose</th>
+                <th className="border-b p-4">Repayment Amount</th>
               </tr>
             </thead>
             <tbody>
@@ -311,7 +311,7 @@ const LoanDashboard = () => {
                   <td className="border-b p-4">{loan.lastName}</td>
                   <td className="border-b p-4">{loan.amount}</td>
                   <td className="border-b p-4">{loan.term}</td>
-                  <td className="border-b p-4">{loan.purpose}</td>
+                  <td className="border-b p-4">{loan.repaymentAmount}</td>
                 </tr>
               ))}
             </tbody>
