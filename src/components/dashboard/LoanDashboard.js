@@ -33,8 +33,10 @@ const LoanDashboard = () => {
     // Ensure all state and functions are defined in this component
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [alertVisible, setAlertVisible] = useState(false);
-
-
+  const [recentLoans, setRecentLoans] = useState([]);
+  const [totalLoans, setTotalLoans] = useState(0); // State for total loans
+  const [totalLoanAmount, setTotalLoanAmount] = useState(0); // State for total loans Amount
+  const [totalDiscount, setTotalDiscount] = useState(0); // State for total loans Amount
   // Toggle modal function
   const toggleModal = () => {
     setIsModalOpen((prev) => !prev);
@@ -71,6 +73,56 @@ const LoanDashboard = () => {
       return updatedData;
     });
   };
+
+  //fetching recent transactions
+
+  const fetchRecentLoans = async () => {
+    try {
+      const loansRef = collection(db, "loanApplications");
+      const recentLoansQuery = query(loansRef, orderBy("timestamp", "desc"), limit(5));
+      const querySnapshot = await getDocs(recentLoansQuery);
+      const loans = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setRecentLoans(loans);
+      console.log("fetched loans successfully ",loans)
+    } catch (error) {
+      console.error("Error fetching recent loans: ", error);
+    }
+  };
+
+
+  // Fetch total number of loans
+  const fetchTotalLoans = async () => {
+    let totalAmount = 0;
+    let totalDiscount = 0;
+    let totalRepaymentAmount = 0;
+    try {
+      const loansCollection = collection(db, "loanApplications");
+      const querySnapshot = await getDocs(loansCollection);
+      setTotalLoans(querySnapshot.size); // Set total number of loans
+      // Loop through all documents and accumulate the amount
+      querySnapshot.forEach((doc) => {
+      const loan = doc.data(); // Get loan data
+      if (loan.amount) {
+        
+        totalAmount += parseFloat(loan.amount); // Add the loan amount to the total
+        totalRepaymentAmount += parseFloat(loan.repaymentAmount);
+        totalDiscount = totalRepaymentAmount - totalAmount;
+        setTotalLoanAmount(totalAmount);
+        setTotalDiscount(totalDiscount);
+
+
+  }
+});
+    
+    } catch (error) {
+      console.error("Error fetching total loans:", error);
+    }
+  };
+  // Fetch rloan details
+  useEffect(() => {
+    fetchRecentLoans();
+    fetchTotalLoans();
+    } , []);
   
  // Handle form submission and save to Firestore
  const handleFormSubmit = async (e) => {
@@ -89,7 +141,8 @@ const LoanDashboard = () => {
       timestamp: new Date(),
     });
   
-
+    fetchRecentLoans();
+    fetchTotalLoans();
     // Clear form after successful submission
     setFormData({
       firstName: "",
@@ -107,25 +160,9 @@ const LoanDashboard = () => {
       }
     };
 
-    //fetching recent loans
-    const [recentLoans, setRecentLoans] = useState([]);
+   
 
-    const fetchRecentLoans = async () => {
-      try {
-        const loansRef = collection(db, "loanApplications");
-        const recentLoansQuery = query(loansRef, orderBy("timestamp", "desc"), limit(5));
-        const querySnapshot = await getDocs(recentLoansQuery);
-        const loans = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        setRecentLoans(loans);
-        console.log("fetched loans successfully ",loans)
-      } catch (error) {
-        console.error("Error fetching recent loans: ", error);
-      }
-    };
-    // Fetch recent loans on initial load
-    useEffect(() => {
-      fetchRecentLoans();
-      }       , []);
+   
   
   return (
     <div className="min-h-screen bg-gray-100 flex">
@@ -188,7 +225,7 @@ const LoanDashboard = () => {
               <div className="bg-blue-500 text-white p-4 rounded-full">
                 <FontAwesomeIcon icon={faMoneyBillWave} className="text-2xl" />
               </div>
-              <span className="text-xl font-bold text-gray-800">125</span>
+              <span className="text-xl font-bold text-gray-800">{totalLoans}</span>
             </div>
           </div>
 
@@ -200,7 +237,7 @@ const LoanDashboard = () => {
               <div className="bg-red-500 text-white p-4 rounded-full">
                 <FontAwesomeIcon icon={faMoneyBillWave} className="text-2xl" />
               </div>
-              <span className="text-xl font-bold text-gray-800">110</span>
+              <span className="text-xl font-bold text-gray-800">0</span>
             </div>
           </div>
 
@@ -212,7 +249,7 @@ const LoanDashboard = () => {
               <div className="bg-green-500 text-white p-4 rounded-full">
                 <FontAwesomeIcon icon={faMoneyBillWave} className="text-2xl" />
               </div>
-              <span className="text-xl font-bold text-gray-800">3</span>
+              <span className="text-xl font-bold text-gray-800">0</span>
             </div>
           </div>
 
@@ -224,7 +261,7 @@ const LoanDashboard = () => {
               <div className="bg-orange-500 text-white p-4 rounded-full">
                 <FontAwesomeIcon icon={faClock} className="text-2xl" />
               </div>
-              <span className="text-xl font-bold text-gray-800">3</span>
+              <span className="text-xl font-bold text-gray-800">0</span>
             </div>
           </div>
 
@@ -236,7 +273,7 @@ const LoanDashboard = () => {
               <div className="bg-teal-500 text-white p-4 rounded-full">
                 <FontAwesomeIcon icon={faChartLine} className="text-2xl" />
               </div>
-              <span className="text-xl font-bold text-gray-800">2,500</span>
+              <span className="text-xl font-bold text-gray-800">{totalLoanAmount}</span>
             </div>
           </div>
 
@@ -248,7 +285,7 @@ const LoanDashboard = () => {
               <div className="bg-indigo-500 text-white p-4 rounded-full">
                 <FontAwesomeIcon icon={faMoneyBillWave} className="text-2xl" />
               </div>
-              <span className="text-xl font-bold text-gray-800">1,200</span>
+              <span className="text-xl font-bold text-gray-800">0</span>
             </div>
           </div>
 
@@ -260,7 +297,7 @@ const LoanDashboard = () => {
               <div className="bg-yellow-500 text-white p-4 rounded-full">
                 <FontAwesomeIcon icon={faMoneyBillWave} className="text-2xl" />
               </div>
-              <span className="text-xl font-bold text-gray-800">1,200</span>
+              <span className="text-xl font-bold text-gray-800">0</span>
             </div>
           </div>
 
@@ -272,7 +309,7 @@ const LoanDashboard = () => {
               <div className="bg-green-600 text-white p-4 rounded-full">
                 <FontAwesomeIcon icon={faChartLine} className="text-2xl" />
               </div>
-              <span className="text-xl font-bold text-gray-800">500</span>
+              <span className="text-xl font-bold text-gray-800">{totalDiscount}</span>
             </div>
           </div>
         </div>
